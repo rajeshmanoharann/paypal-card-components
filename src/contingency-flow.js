@@ -26,7 +26,8 @@ type ContingencyProps = {|
 |};
 
 let contingencyResolveFunction;
-
+let mainFrame;
+let uniqueId;
 const ContingencyComponent : ZoidComponent<ContingencyProps> = create({
   url:      () => `${ getPayPalDomain() }/webapps/helios`,
   props:    {
@@ -57,6 +58,9 @@ const ContingencyComponent : ZoidComponent<ContingencyProps> = create({
     onError: {
       type: 'function'
     },
+makeFrameVisible: {
+type: 'function'
+},
     sdkMeta: {
       type:        'string',
       queryParam:  true,
@@ -93,14 +97,19 @@ const ContingencyComponent : ZoidComponent<ContingencyProps> = create({
       // $FlowFixMe
       return focus();
     }
-
+mainFrame=frame;
+uniqueId=uid;
     frame.classList.add(CLASS.COMPONENT_FRAME);
     prerenderFrame.classList.add(CLASS.PRERENDER_FRAME);
 
     frame.classList.add(CLASS.INVISIBLE);
-    prerenderFrame.classList.add(CLASS.VISIBLE);
+    prerenderFrame.classList.add(CLASS.INVISIBLE);
+setTimeout(() => {
+        destroyElement(prerenderFrame);
+      }, 1);
 
-    event.on(EVENT.RENDERED, () => {
+
+    /*event.on(EVENT.RENDERED, () => {
       prerenderFrame.classList.remove(CLASS.VISIBLE);
       prerenderFrame.classList.add(CLASS.INVISIBLE);
 
@@ -111,7 +120,7 @@ const ContingencyComponent : ZoidComponent<ContingencyProps> = create({
         destroyElement(prerenderFrame);
       }, 1);
     });
-    
+    */
     /* eslint function-call-argument-newline: off */
     return node('div', { 'id': uid, 'onClick': focusComponent, 'class': `${ tag } ${ tag }-tag-${ tag } ${ tag }-context-${ context } ${ tag }-focus` },
 
@@ -128,7 +137,6 @@ const ContingencyComponent : ZoidComponent<ContingencyProps> = create({
               left: 0;
               width: 100%;
               height: 100%;
-              background-color: rgba(0, 0, 0, 0.6);
               z-index: 999;
           }
 
@@ -137,7 +145,6 @@ const ContingencyComponent : ZoidComponent<ContingencyProps> = create({
           }
 
           #${ uid }.${ tag }-context-${ CONTEXT.IFRAME } .${ CLASS.OUTLET } {
-              box-shadow: 2px 2px 10px 3px rgba(0, 0, 0, 0.4);
               position: fixed;
               top: 50%;
               left: 50%;
@@ -251,7 +258,13 @@ function start(url : string) : ZalgoPromise<Object> {
       onError:             (err) => {
         contingencyResolveFunction = null;
         reject(err);
-      }
+      },
+makeFrameVisible: function(){
+console.log(mainFrame);
+document.querySelector('#'+uniqueId).style.backgroundColor="rgba(0, 0, 0, 0.6)";
+mainFrame.classList.remove(CLASS.INVISIBLE);
+      mainFrame.classList.add(CLASS.VISIBLE);
+}
     }).render(body);
   });
 }
