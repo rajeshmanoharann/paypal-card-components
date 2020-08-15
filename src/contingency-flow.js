@@ -2,7 +2,7 @@
 /* eslint import/no-default-export: off */
 
 import { getLogger, getClientID, getPayPalDomain, getSDKMeta } from '@paypal/sdk-client/src';
-import { create, CONTEXT, EVENT, type ZoidComponent } from 'zoid/src';
+import { create, CONTEXT,  type ZoidComponent } from 'zoid/src';
 import { ZalgoPromise } from 'zalgo-promise/src';
 import { parseQuery, destroyElement } from 'belter/src';
 import { node, dom } from 'jsx-pragmatic/src';
@@ -58,9 +58,9 @@ const ContingencyComponent : ZoidComponent<ContingencyProps> = create({
     onError: {
       type: 'function'
     },
-makeFrameVisible: {
-type: 'function'
-},
+    makeFrameVisible: {
+      type: 'function'
+    },
     sdkMeta: {
       type:        'string',
       queryParam:  true,
@@ -69,7 +69,7 @@ type: 'function'
     }
   },
   tag: CONTINGENCY_TAG,
-  containerTemplate({ uid, tag, context, focus, close, frame, prerenderFrame, doc, event }) : ?HTMLElement {
+  containerTemplate({ uid, tag, context, focus, close, frame, prerenderFrame, doc }) : ?HTMLElement {
     if (!frame || !prerenderFrame) {
       return;
     }
@@ -97,19 +97,19 @@ type: 'function'
       // $FlowFixMe
       return focus();
     }
-mainFrame=frame;
-uniqueId=uid;
+    mainFrame = frame;
+    uniqueId = uid;
     frame.classList.add(CLASS.COMPONENT_FRAME);
     prerenderFrame.classList.add(CLASS.PRERENDER_FRAME);
 
     frame.classList.add(CLASS.INVISIBLE);
     prerenderFrame.classList.add(CLASS.INVISIBLE);
-setTimeout(() => {
-        destroyElement(prerenderFrame);
-      }, 1);
+    setTimeout(() => {
+      destroyElement(prerenderFrame);
+    }, 1);
 
 
-    /*event.on(EVENT.RENDERED, () => {
+    /* event.on(EVENT.RENDERED, () => {
       prerenderFrame.classList.remove(CLASS.VISIBLE);
       prerenderFrame.classList.add(CLASS.INVISIBLE);
 
@@ -259,12 +259,11 @@ function start(url : string) : ZalgoPromise<Object> {
         contingencyResolveFunction = null;
         reject(err);
       },
-makeFrameVisible: function(){
-console.log(mainFrame);
-document.querySelector('#'+uniqueId).style.backgroundColor="rgba(0, 0, 0, 0.6)";
-mainFrame.classList.remove(CLASS.INVISIBLE);
-      mainFrame.classList.add(CLASS.VISIBLE);
-}
+      makeFrameVisible: () => {
+        document.querySelector(`#${ uniqueId }`).style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+        mainFrame.classList.remove(CLASS.INVISIBLE);
+        mainFrame.classList.add(CLASS.VISIBLE);
+      }
     }).render(body);
   });
 }
